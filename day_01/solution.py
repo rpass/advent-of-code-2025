@@ -19,27 +19,53 @@ def process_input(data):
     Returns:
         The processed result
     """
-    # TODO: Implement your solution here
     instructions = data.split("\n")
     position = 50
     zero_count = 0
     print("Input: ", instructions)
     print("starting position: ", position)
+
+    # all the posible outcomes from a turn:
+    # the dial moves right and doesn't pass or stop on zero
+    # dial moves right and lands on zero
+    # dial moves right and passes zero once or more times
+    # dial moves left and doesn't pass or stop on zero
+    # dial moves left and stops on zero, landing on it only once
+    # dial moves left and passes zero only once
+    # dial moves left and passes zero multiple times
+    
     for instruction in instructions:
+        # parse instruction
         direction = instruction[0] 
         distance = int(instruction[1:])
-        if direction == 'L':
-            position -= int(instruction[1:])
-        else:
-            position += int(instruction[1:])
 
-        position = position % 99
+        # record starting position
+        starting_position = position
+    
+        # determine direction as subtraction (left) or addition (right)
+        if direction == 'L':
+            position -= distance
+        else:
+            position += distance
+        print("position: ", position)
+
+        # tally a zero if the position is now negative
+        # after starting at a positive position
+        if position <= 0 and starting_position > 0:
+            print("++ from negative position and positive starting position")
+            zero_count += 1
+
+        # calculate the multiples of 100 as proxy for
+        # full turns around the wheel
+        quotient = abs(position) // 100
+        zero_count += quotient
+        
+        # normalise position to determine 0 to 99 position
+        position = position % 100
 
         if position < 0:
             position += 100
 
-        if position == 0:
-            zero_count += 1
         print("position: ", position)
 
     return zero_count
